@@ -60,7 +60,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(603, 476));
         setResizable(false);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon("/Users/dant/Downloads/Cloudera_logo_4c/cloudera_connect_logo.png")); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/cloudera_connect_logo.png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 1, 32)); // NOI18N
         jLabel2.setText("Certification Cluster Builder");
@@ -95,7 +95,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
         jLabel7.setText("Powered by");
 
-        jLabel8.setIcon(new javax.swing.ImageIcon("/Users/dant/Downloads/brooklyn_sm.png")); // NOI18N
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/brooklyn_sm.png"))); // NOI18N
 
         deploy.setText("Deploy Cluster");
         deploy.addActionListener(new java.awt.event.ActionListener() {

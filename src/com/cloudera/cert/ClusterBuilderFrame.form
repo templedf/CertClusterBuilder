@@ -146,7 +146,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="2" name="/Users/dant/Downloads/Cloudera_logo_4c/cloudera_connect_logo.png"/>
+          <Image iconType="3" name="/resources/cloudera_connect_logo.png"/>
         </Property>
       </Properties>
     </Component>
@@ -223,7 +223,7 @@
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="2" name="/Users/dant/Downloads/brooklyn_sm.png"/>
+          <Image iconType="3" name="/resources/brooklyn_sm.png"/>
         </Property>
       </Properties>
     </Component>
