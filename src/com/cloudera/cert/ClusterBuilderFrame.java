@@ -244,11 +244,17 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
             cloudCode = "gogrid";
         }
 
-//        setStatus("starting");
+        consoleFrame.addOutput("Launching cluster...\n");
         CertClusterBuilder.launch(cloudCode, cloudSpec, userField.getText(), passwordField.getText());
         
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            brooklyn.setEnabled(true);
+            // Delay activating the button until Brooklyn has had time to come up.
+            delayTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    brooklyn.setEnabled(true);
+                }
+            }, 8000);
         }
     }//GEN-LAST:event_deployCluster
 
@@ -270,7 +276,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     
     void setTempStatus(String message) {
         setStatus(message.trim());
-        setDelayedStatus(DEFAULT_MESSAGE, 3);
+        setDelayedStatus(DEFAULT_MESSAGE, 2);
     }
     
     private void setDelayedStatus(final String message, int delay) {
