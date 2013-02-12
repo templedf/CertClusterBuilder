@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.apache.commons.io.output.TeeOutputStream;
+
 /**
  *
  * @author daniel@cloudera.com
@@ -48,8 +50,8 @@ public class CertClusterBuilder {
         frame.pack();
         frame.setVisible(true);
         
-        // Redirect all of the logging to the console
-        System.setOut(new PrintStream(new OutputStream() {
+        // Tee all of the stdout console logging; send to stdout _and_ to frame
+        PrintStream out = new PrintStream(new OutputStream() {
             private StringBuilder line = new StringBuilder();
             
             @Override
@@ -62,7 +64,8 @@ public class CertClusterBuilder {
                     }
                 }
             }
-        }));
+        });
+        System.setOut(new PrintStream(new TeeOutputStream(System.out, out)));
     }
     
     public static int getPort() {
