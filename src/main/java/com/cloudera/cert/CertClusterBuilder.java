@@ -1,6 +1,7 @@
 package com.cloudera.cert;
 
 import brooklyn.config.BrooklynProperties;
+import brooklyn.entity.basic.Attributes;
 import brooklyn.entity.basic.Lifecycle;
 import brooklyn.event.SensorEvent;
 import brooklyn.event.SensorEventListener;
@@ -104,12 +105,18 @@ public class CertClusterBuilder {
         ((BrooklynProperties) mgmt.getConfig()).put("brooklyn.jclouds." + cloudCode + ".identity", identity);
         ((BrooklynProperties) mgmt.getConfig()).put("brooklyn.jclouds." + cloudCode + ".credential", credentials);
 
-        SampleClouderaManagedCluster app1 = new SampleClouderaManagedCluster(Collections.singletonMap((Object) "name", (Object) "Brooklyn Cloudera Managed Cluster"));
-        details.getManagementContext().manage(app1);
-        mgmt.getSubscriptionManager().subscribe(app1, ClouderaService.SERVICE_STATE, new SensorEventListener<Lifecycle>() {
+        final SampleClouderaManagedCluster app1 = new SampleClouderaManagedCluster(Collections.singletonMap((Object) "name", (Object) "Brooklyn Cloudera Managed Cluster"));
+        details.getManagementContext().getEntityManager().manage(app1);
+        mgmt.getSubscriptionManager().subscribe(app1, Attributes.SERVICE_STATE, new SensorEventListener<Lifecycle>() {
             @Override
             public void onEvent(SensorEvent<Lifecycle> event) {
-                frame.setStatus(event.getValue().toString());
+                updateStatus(frame, event.getValue(), app1.getAttribute(SampleClouderaManagedCluster.CLOUDERA_MANAGER_URL));
+            }
+        });
+        mgmt.getSubscriptionManager().subscribe(app1, SampleClouderaManagedCluster.CLOUDERA_MANAGER_URL, new SensorEventListener<String>() {
+            @Override
+            public void onEvent(SensorEvent<String> event) {
+                updateStatus(frame, app1.getAttribute(Attributes.SERVICE_STATE), event.getValue());
             }
         });
 
@@ -119,7 +126,7 @@ public class CertClusterBuilder {
         app1.start(locations);
 
         // to find out the CDH endpoint
-        System.out.println("CDH Manager running at: " + app1.whirrCM.getAttribute(WhirrClouderaManager.CLOUDERA_MANAGER_URL));
+        System.out.println("CDH Manager running at: " + app1.getManager().getAttribute(WhirrClouderaManager.CLOUDERA_MANAGER_URL));
 
         // to collect metrics (again, synchronous)
 //        String directory = app1.getServices().collectMetrics();
@@ -131,4 +138,12 @@ public class CertClusterBuilder {
         // can also start multiple apps...            
 //            app2.start(locations);
     }
+    
+    private static void updateStatus(ClusterBuilderFrame frame2, Lifecycle appStatus, String url) {
+        String text = appStatus.toString().toUpperCase();
+        if (appStatus == Lifecycle.RUNNING && url!=null)
+            text = text+": "+url;
+        frame.setStatus(text);
+    }
+
 }
