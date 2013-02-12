@@ -1,9 +1,11 @@
 package com.cloudera.cert;
 
 import java.awt.Desktop;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -18,6 +20,8 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     private static ConsoleFrame consoleFrame = null;
     private static final Timer delayTimer = new Timer();
     private TimerTask delayTask = null;
+    /** the last status set (excluding {@link #setTempStatus(String)}) */
+    private String lastPermanentStatus = DEFAULT_MESSAGE;
     
     /**
      * Creates new form ClusterBuilderFrame
@@ -232,6 +236,8 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         String cloudSpec = null;
         String cloudName = provider.getSelectedItem().toString();
         
+        setStatus("Deploying to "+cloudName+"...");
+        
         if (cloudName.equals("Amazon East")) {
             cloudCode = "aws-ec2";
             cloudSpec = "us-east-1";
@@ -263,11 +269,16 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     }
     
     void setStatus(String message) {
+        setStatus(message, true);
+    }
+    
+    void setStatus(String message, boolean permanent) {
         if (delayTask != null) {
             delayTask.cancel();
         }
         
         status.setText(message.trim());
+        if (permanent) lastPermanentStatus = message.trim();
     }
     
     void setDefaultStatus() {
@@ -275,8 +286,8 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     }
     
     void setTempStatus(String message) {
-        setStatus(message.trim());
-        setDelayedStatus(DEFAULT_MESSAGE, 2);
+        setStatus(message.trim(), false);
+        setDelayedStatus(lastPermanentStatus, 2);
     }
     
     private void setDelayedStatus(final String message, int delay) {
