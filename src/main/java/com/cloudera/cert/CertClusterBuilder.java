@@ -12,7 +12,6 @@ import brooklyn.location.basic.BasicLocationRegistry;
 import brooklyn.management.ManagementContext;
 import brooklyn.util.CommandLineUtil;
 import io.cloudsoft.cloudera.SampleClouderaManagedCluster;
-import io.cloudsoft.cloudera.brooklynnodes.ClouderaService;
 import io.cloudsoft.cloudera.brooklynnodes.WhirrClouderaManager;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,8 +21,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
-import org.apache.commons.io.output.TeeOutputStream;
 
 /**
  *
@@ -66,7 +63,8 @@ public class CertClusterBuilder {
                 }
             }
         });
-        System.setOut(new PrintStream(new TeeOutputStream(System.out, out)));
+        
+        System.setOut(out);
     }
     
     public static int getPort() {
@@ -106,17 +104,22 @@ public class CertClusterBuilder {
         ((BrooklynProperties) mgmt.getConfig()).put("brooklyn.jclouds." + cloudCode + ".credential", credentials);
 
         final SampleClouderaManagedCluster app1 = new SampleClouderaManagedCluster(Collections.singletonMap((Object) "name", (Object) "Brooklyn Cloudera Managed Cluster"));
+        
         details.getManagementContext().getEntityManager().manage(app1);
         mgmt.getSubscriptionManager().subscribe(app1, Attributes.SERVICE_STATE, new SensorEventListener<Lifecycle>() {
             @Override
             public void onEvent(SensorEvent<Lifecycle> event) {
-                updateStatus(frame, event.getValue(), app1.getAttribute(SampleClouderaManagedCluster.CLOUDERA_MANAGER_URL));
+                if (event.getValue() == Lifecycle.RUNNING) {
+                    updateStatus(event.getValue(), app1.getAttribute(SampleClouderaManagedCluster.CLOUDERA_MANAGER_URL));
+                } else {
+                    updateStatus(event.getValue());
+                }
             }
         });
         mgmt.getSubscriptionManager().subscribe(app1, SampleClouderaManagedCluster.CLOUDERA_MANAGER_URL, new SensorEventListener<String>() {
             @Override
             public void onEvent(SensorEvent<String> event) {
-                updateStatus(frame, app1.getAttribute(Attributes.SERVICE_STATE), event.getValue());
+                updateStatus(app1.getAttribute(Attributes.SERVICE_STATE), event.getValue());
             }
         });
 
@@ -139,11 +142,11 @@ public class CertClusterBuilder {
 //            app2.start(locations);
     }
     
-    private static void updateStatus(ClusterBuilderFrame frame2, Lifecycle appStatus, String url) {
-        String text = appStatus.toString().toUpperCase();
-        if (appStatus == Lifecycle.RUNNING && url!=null)
-            text = text+": "+url;
-        frame.setStatus(text);
+    private static void updateStatus(Lifecycle appStatus) {
+        frame.setStatus(appStatus.toString().toUpperCase());
     }
-
+    
+    private static void updateStatus(Lifecycle appStatus, String url) {
+        frame.setStatus(appStatus.toString().toUpperCase() + ": " + url);
+    }
 }

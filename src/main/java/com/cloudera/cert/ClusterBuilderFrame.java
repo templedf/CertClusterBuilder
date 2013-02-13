@@ -1,11 +1,9 @@
 package com.cloudera.cert;
 
 import java.awt.Desktop;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -278,7 +276,10 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         }
         
         status.setText(message.trim());
-        if (permanent) lastPermanentStatus = message.trim();
+        
+        if (permanent) {
+            lastPermanentStatus = message.trim();
+        }
     }
     
     void setDefaultStatus() {
