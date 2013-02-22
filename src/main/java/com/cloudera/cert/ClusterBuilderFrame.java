@@ -20,13 +20,13 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     private TimerTask delayTask = null;
     /** the last status set (excluding {@link #setTempStatus(String)}) */
     private String lastPermanentStatus = DEFAULT_MESSAGE;
-    
+
     /**
      * Creates new form ClusterBuilderFrame
      */
     public ClusterBuilderFrame() {
         initComponents();
-        
+
         consoleFrame = new ConsoleFrame(this);
     }
 
@@ -62,7 +62,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         setMaximumSize(new java.awt.Dimension(603, 476));
         setResizable(false);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/cloudera_connect_logo.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cloudera_connect_logo.png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 1, 32)); // NOI18N
         jLabel2.setText("Certification Cluster Builder");
@@ -97,7 +97,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
         jLabel7.setText("Powered by");
 
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/brooklyn_sm.png"))); // NOI18N
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/brooklyn_sm.png"))); // NOI18N
 
         deploy.setText("Deploy Cluster");
         deploy.addActionListener(new java.awt.event.ActionListener() {
@@ -217,7 +217,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
     private void launchBrooklynUI(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchBrooklynUI
         setTempStatus("Launching browser...");
-        
+
         try {
             Desktop.getDesktop().browse(new URI("http://localhost:" + CertClusterBuilder.getPort()));
         } catch (IOException ex) {
@@ -229,13 +229,13 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
     private void deployCluster(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deployCluster
         deploy.setEnabled(false);
-        
+
         String cloudCode = null;
         String cloudSpec = null;
         String cloudName = provider.getSelectedItem().toString();
-        
+
         setStatus("Deploying to "+cloudName+"...");
-        
+
         if (cloudName.equals("Amazon East")) {
             cloudCode = "aws-ec2";
             cloudSpec = "us-east-1";
@@ -250,7 +250,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
         consoleFrame.addOutput("Launching cluster...\n");
         CertClusterBuilder.launch(cloudCode, cloudSpec, userField.getText(), passwordField.getText());
-        
+
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             // Delay activating the button until Brooklyn has had time to come up.
             delayTimer.schedule(new TimerTask() {
@@ -265,41 +265,41 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     void consoleClosed() {
         console.setEnabled(true);
     }
-    
+
     void setStatus(String message) {
         setStatus(message, true);
     }
-    
+
     void setStatus(String message, boolean permanent) {
         if (delayTask != null) {
             delayTask.cancel();
         }
-        
+
         status.setText(message.trim());
-        
+
         if (permanent) {
             lastPermanentStatus = message.trim();
         }
     }
-    
+
     void setDefaultStatus() {
         setStatus(DEFAULT_MESSAGE);
     }
-    
+
     void setTempStatus(String message) {
         setStatus(message.trim(), false);
         setDelayedStatus(lastPermanentStatus, 2);
     }
-    
+
     private void setDelayedStatus(final String message, int delay) {
         delayTask = new DelayTask(message);
         delayTimer.schedule(delayTask, delay * 1000);
     }
-    
+
     void addOutput(String message) {
         consoleFrame.addOutput(message);
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -307,7 +307,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -360,7 +360,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         DelayTask(String message) {
             this.message = message;
         }
-        
+
         @Override
         public void run() {
             setStatus(message);
