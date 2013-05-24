@@ -1,19 +1,40 @@
 package com.cloudera.cert;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.cloudera.model.Cloud;
+import com.cloudera.utils.TextTransferHandler;
+import com.cloudera.utils.Clouds;
+import com.cloudera.model.ProviderComboBox;
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
+import com.google.common.io.Files;
+
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 /**
  *
  * @author daniel@cloudera.com
  */
 public class ClusterBuilderFrame extends javax.swing.JFrame {
+    
+    private static final Logger log = LoggerFactory.getLogger(ClusterBuilderFrame.class);
+    
     private static final String DEFAULT_MESSAGE = "Ready";
     private static ConsoleFrame consoleFrame = null;
     private static final Timer delayTimer = new Timer();
@@ -26,7 +47,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
      */
     public ClusterBuilderFrame() {
         initComponents();
-
+        this.setTitle("Cloudera Connect");
         consoleFrame = new ConsoleFrame(this);
     }
 
@@ -47,15 +68,24 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         console = new javax.swing.JButton();
         brooklyn = new javax.swing.JButton();
         passwordField = new javax.swing.JPasswordField();
-        userField = new javax.swing.JPasswordField();
+        TextTransferHandler tth1 = new TextTransferHandler();
+        passwordField.setTransferHandler(tth1);
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         deploy = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel9 = new javax.swing.JLabel();
-        provider = new javax.swing.JComboBox();
+        Map<String, Boolean> nameAndEnabled = Maps.newLinkedHashMap();
+        for (Cloud cloud : Clouds.getSupportedClouds()) {
+            nameAndEnabled.put(cloud.getDisplayName(), cloud.isEnabled());
+        }
+        provider = new ProviderComboBox(nameAndEnabled);
         status = new javax.swing.JLabel();
+        userField = new javax.swing.JTextField();
+        TextTransferHandler tth = new TextTransferHandler();
+        userField.setTransferHandler(tth);
+        userField.setDragEnabled(true);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -93,8 +123,6 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
         passwordField.setMaximumSize(new java.awt.Dimension(14, 28));
 
-        userField.setMaximumSize(new java.awt.Dimension(14, 28));
-
         jLabel7.setText("Powered by");
 
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/brooklyn_sm.png"))); // NOI18N
@@ -109,11 +137,22 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jLabel9.setText("Provider");
 
-        provider.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Amazon East", "Amazon West", "Go Grid", "Rackspace" }));
+        provider.setModel(new javax.swing.DefaultComboBoxModel(Clouds.getAvailableDisplayNames()));
+        provider.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                providerActionPerformed(evt);
+            }
+        });
 
         status.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         status.setForeground(new java.awt.Color(51, 51, 51));
         status.setText(DEFAULT_MESSAGE);
+
+        userField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                userFieldActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,7 +168,7 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
                         .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .add(53, 53, 53))
                     .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
                             .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 467, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                             .add(layout.createSequentialGroup()
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -140,19 +179,19 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
                                             .add(jLabel9)
                                             .add(jLabel5))
                                         .add(32, 32, 32)
-                                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                                            .add(provider, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .add(passwordField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 147, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                            .add(userField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 147, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                                .add(26, 26, 26)
-                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(brooklyn)
-                                    .add(deploy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 165, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                    .add(console, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 165, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                            .add(org.jdesktop.layout.GroupLayout.LEADING, userField)
+                                            .add(org.jdesktop.layout.GroupLayout.LEADING, passwordField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .add(provider, 0, 187, Short.MAX_VALUE))))
+                                .add(115, 115, 115)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                    .add(brooklyn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .add(console, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .add(deploy, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .add(67, 67, 67)
                                 .add(jLabel6))
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                                .add(status, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 340, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(status, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                 .add(jLabel7)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -174,11 +213,11 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(layout.createSequentialGroup()
-                                .add(deploy, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 37, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(deploy)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(console, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(console)
                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(brooklyn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 40, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .add(brooklyn))
                             .add(layout.createSequentialGroup()
                                 .add(jLabel3)
                                 .add(21, 21, 21)
@@ -217,39 +256,26 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
 
     private void launchBrooklynUI(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_launchBrooklynUI
         setTempStatus("Launching browser...");
-
         try {
             Desktop.getDesktop().browse(new URI("http://localhost:" + CertClusterBuilder.getPort()));
-        } catch (IOException ex) {
-            Logger.getLogger(ClusterBuilderFrame.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(ClusterBuilderFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            log.error(ex.getLocalizedMessage());
         }
     }//GEN-LAST:event_launchBrooklynUI
 
     private void deployCluster(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deployCluster
         deploy.setEnabled(false);
-
-        String cloudCode = null;
-        String cloudSpec = null;
         String cloudName = provider.getSelectedItem().toString();
+        Cloud cloud = checkNotNull(Clouds.getCloud(cloudName), "cloudname " + cloudName + " is not supported");
+        String cloudCode = cloud.getProvider();
+        String cloudSpec = cloud.getRegion().isPresent() ?  cloud.getRegion().get() : null;
 
         setStatus("Deploying to "+cloudName+"...");
-
-        if (cloudName.equals("Amazon East")) {
-            cloudCode = "aws-ec2";
-            cloudSpec = "us-east-1";
-        } else if (cloudName.equals("Amazon West")) {
-            cloudCode = "aws-ec2";
-            cloudSpec = "us-west-1";
-        } else if (cloudName.equals("Rackspace")) {
-            cloudCode = "rackspace-cloudservers-us";
-        } else if (cloudName.equals("Go Grid")) {
-            cloudCode = "gogrid";
-        }
-
         consoleFrame.addOutput("Launching cluster...\n");
-        CertClusterBuilder.launch(cloudCode, cloudSpec, userField.getText(), passwordField.getText());
+        if(credential == null) {
+            credential = String.copyValueOf(passwordField.getPassword());
+        }
+        CertClusterBuilder.launch(cloudCode, cloudSpec, userField.getText(), credential);
 
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             // Delay activating the button until Brooklyn has had time to come up.
@@ -261,6 +287,13 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
             }, 8000);
         }
     }//GEN-LAST:event_deployCluster
+
+    private void providerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_providerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_providerActionPerformed
+
+    private void userFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userFieldActionPerformed
+    }//GEN-LAST:event_userFieldActionPerformed
 
     void consoleClosed() {
         console.setEnabled(true);
@@ -299,41 +332,6 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     void addOutput(String message) {
         consoleFrame.addOutput(message);
     }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ClusterBuilderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClusterBuilderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ClusterBuilderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ClusterBuilderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ClusterBuilderFrame().setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton brooklyn;
     private javax.swing.JButton console;
@@ -351,9 +349,11 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JComboBox provider;
     private javax.swing.JLabel status;
-    private javax.swing.JPasswordField userField;
+    private javax.swing.JTextField userField;
     // End of variables declaration//GEN-END:variables
-
+    private String credential = null;
+    private javax.swing.JPopupMenu popupMenu;
+ 
     private class DelayTask extends TimerTask {
         private String message;
 
@@ -366,4 +366,42 @@ public class ClusterBuilderFrame extends javax.swing.JFrame {
             setStatus(message);
         }
     }
+
+   /**
+   * Create the GUI and show it. For thread safety, this method should be
+   * invoked from the event-dispatching thread.
+   */
+  private static void createAndShowGUI() {
+    // Create and set up the window.
+    JFrame frame = new ClusterBuilderFrame();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    // Display the window.
+    frame.pack();
+    frame.setVisible(true);
+  }
+
+  public static void main(String[] args) {
+    // Schedule a job for the event-dispatching thread:
+    // creating and showing this application's GUI.
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        // Turn off metal's use of bold fonts
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+        /*
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getLocalizedMessage());
+        }*/
+        createAndShowGUI();
+      }
+    });
+  }
+
 }
