@@ -118,6 +118,6 @@ public class CertClusterBuilder {
                 (SampleClouderaManagedClusterInterface) getOnlyElement(launcher.getApplications());
         app.startServices(true, false);
         stopwatch.stop(); 
-        log.info("Time to deploy " + location + ": " + stopwatch.elapsed(TimeUnit.SECONDS) + " seconds");
+        log.info("Time to deploy " + location + ": " + stopwatch.elapsedTime(TimeUnit.SECONDS) + " seconds");
     }
 }
