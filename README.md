@@ -9,6 +9,7 @@ You must have the following software installed and compiled ():
 
 * `git clone https://github.com/cloudsoft/brooklyn-cdh.git`
 * cd brooklyn-cdh/
+* `git checkout update/brooklyn-060-SNAPSHOT`
 * `mvn clean install`
 
 ### Create a redistributable binary archive
