@@ -20,8 +20,6 @@ Set up the target cloud and credentials in `~/.brooklyn/brooklyn.properties`, e.
     brooklyn.location.named.ibm-cloud-first.privateKeyFile = /path/to/your/.ssh/id_rsa
     brooklyn.location.named.ibm-cloud-first = jclouds:openstack-nova
     brooklyn.location.named.ibm-cloud-first.endpoint=https://cloudfirst.demos.ibm.com/keystone/v2.0
-    brooklyn.location.named.ibm-cloud-first.identity=tenantName:userName@organization
-    brooklyn.location.named.ibm-cloud-first.credential=your-password
     brooklyn.location.named.ibm-cloud-first.loginUser=idcuser
     brooklyn.location.named.ibm-cloud-first.securityGroups=universal
     brooklyn.location.named.ibm-cloud-first.keyPair=cdh
@@ -34,8 +32,6 @@ Set up the target cloud and credentials in `~/.brooklyn/brooklyn.properties`, e.
 
     #### IBM SmartCloudEnterprise
     brooklyn.location.named.ibm-sce=ibm-smartcloud
-    brooklyn.location.named.ibm-sce.identity=your-identity
-    brooklyn.location.named.ibm-sce.credential=your-password
     brooklyn.location.named.ibm-sce.user=idcuser
 
 ### Create a redistributable binary archive
