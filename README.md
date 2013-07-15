@@ -1,16 +1,6 @@
 Cloudera Connect Certified Technology Cluster Appliance
 =======================================================
-This project is an application that Cloudera technology partners can use to
-easily launch a pre-configured cluster for use in certification testing.
-
-### Dependencies
-
-You must have the following software installed and compiled ():
-
-* `git clone https://github.com/cloudsoft/brooklyn-cdh.git`
-* cd brooklyn-cdh/
-* `git checkout update/brooklyn-060-SNAPSHOT`
-* `mvn clean install`
+This project is an application that Cloudera technology partners can use to easily launch a pre-configured cluster for use in certification testing.
 
 ### Setup: Location Credentials
 
@@ -34,11 +24,17 @@ Set up the target cloud and credentials in `~/.brooklyn/brooklyn.properties`, e.
     brooklyn.location.named.ibm-sce=ibm-smartcloud
     brooklyn.location.named.ibm-sce.user=idcuser
 
-### Create a redistributable binary archive
+### Launch Cloudera Certified Technology Cluster appliance
 
-Run `mvn clean assembly:assembly` to generate a redistributable binary archive
-in `target/cert-cluster-builder-1.0.0-SNAPSHOT-dist.tar.gz`.  Unpacking this
-gives a `start.sh` (and a `README`) which can be used to launch the tool.
+In order to launch the GUI, please run the following commands from the root of this project: 
+
+    mvn clean assembly:assembly
+    cd target
+    tar xvzf cert-cluster-builder-1.0.0-SNAPSHOT-dist.tar.gz
+    cd cert-cluster-builder-1.0.0-SNAPSHOT-dist
+    ./start.sh
+
+For more information, please look at the `README`, inside the `target` folder.
 
 For more information about the Cloudera Connect Partner Program, the Cloudera
 Certified Technology program, or this application, please contact
