@@ -6,23 +6,19 @@ This project is an application that Cloudera technology partners can use to easi
 
 Set up the target cloud and credentials in `~/.brooklyn/brooklyn.properties`, e.g.:
 
-    #### IBM CloudFirst Factory 
-    brooklyn.location.named.ibm-cloud-first.privateKeyFile = /path/to/your/.ssh/id_rsa
+#### IBM CloudFirst Factory 
     brooklyn.location.named.ibm-cloud-first = jclouds:openstack-nova
     brooklyn.location.named.ibm-cloud-first.endpoint=https://cloudfirst.demos.ibm.com/keystone/v2.0
     brooklyn.location.named.ibm-cloud-first.loginUser=idcuser
     brooklyn.location.named.ibm-cloud-first.securityGroups=universal
     brooklyn.location.named.ibm-cloud-first.keyPair=cdh
+    brooklyn.location.named.ibm-cloud-first.privateKeyFile = /path/to/your/.ssh/id_rsa
     brooklyn.location.named.ibm-cloud-first.loginUser.privateKeyFile=/path/to/your/privateKey.pem
     brooklyn.location.named.ibm-cloud-first.jclouds.openstack-nova.auto-generate-keypairs=false
     brooklyn.location.named.ibm-cloud-first.jclouds.openstack-nova.auto-create-floating-ips=true
     brooklyn.location.named.ibm-cloud-first.hardwareId=RegionOne/9
     brooklyn.location.named.ibm-cloud-first.imageId=RegionOne/eeced716-bb37-4f3b-a3d6-977e17f20b21
     brooklyn.location.named.ibm-cloud-first.image-id=RegionOne/eeced716-bb37-4f3b-a3d6-977e17f20b21
-
-    #### IBM SmartCloudEnterprise
-    brooklyn.location.named.ibm-sce=ibm-smartcloud
-    brooklyn.location.named.ibm-sce.user=idcuser
 
 ### Launch Cloudera Certified Technology Cluster appliance
 
