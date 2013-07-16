@@ -93,7 +93,7 @@ public class CertClusterBuilder {
     }
     
     private static void deployCluster(String cloudCode, String cloudSpecifier, String identity, String credentials) throws IOException {
-        BrooklynProperties brooklynProperties = BrooklynProperties.Factory.newEmpty();
+        BrooklynProperties brooklynProperties = BrooklynProperties.Factory.newDefault();
         String access_identity = checkNotNull(Strings.emptyToNull(identity), "identity must not be null");
         String access_credential = checkNotNull(Strings.emptyToNull(credentials), "credentials must not be null");
         brooklynProperties.put(CloudLocationConfig.ACCESS_IDENTITY, access_identity);
