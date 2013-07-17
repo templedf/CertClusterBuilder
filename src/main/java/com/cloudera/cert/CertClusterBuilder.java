@@ -96,11 +96,12 @@ public class CertClusterBuilder {
         BrooklynProperties brooklynProperties = BrooklynProperties.Factory.newDefault();
         String access_identity = checkNotNull(Strings.emptyToNull(identity), "identity must not be null");
         String access_credential = checkNotNull(Strings.emptyToNull(credentials), "credentials must not be null");
-        brooklynProperties.put(CloudLocationConfig.ACCESS_IDENTITY, access_identity);
-        brooklynProperties.put(CloudLocationConfig.ACCESS_CREDENTIAL, access_credential);
+
         String location = checkNotNull(Strings.emptyToNull(cloudCode), "cloudCode must not be null");
         if(!Strings.isNullOrEmpty(cloudSpecifier)) { location += ":" + cloudSpecifier; }
-
+        brooklynProperties.put("brooklyn.location.named." + location + ".identity", access_identity);
+        brooklynProperties.put("brooklyn.location.named." + location + ".credential", access_credential);
+        
         log.info("Start time for CDH deployment on '" + location +"'");
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.start();

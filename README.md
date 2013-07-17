@@ -21,6 +21,8 @@ Set up the target cloud and credentials in `~/.brooklyn/brooklyn.properties`, e.
 	brooklyn.location.named.ibm-cloud-first.jclouds.openstack-nova.auto-create-floating-ips=true
 	brooklyn.location.named.ibm-cloud-first.jclouds.openstack-nova.auto-generate-keypairs=false
 	brooklyn.location.named.ibm-cloud-first.jclouds.ssh.max-retries=200
+	
+N.B.: be sure to run `chmod 400 /path/to/keypair/your-keypair-name.pem`
 
 ### Launch Cloudera Certified Technology Cluster appliance
 
