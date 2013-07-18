@@ -34,6 +34,10 @@ In order to launch the GUI, please run the following commands from the root of t
     cd cert-cluster-builder-1.0.0-SNAPSHOT-dist
     ./start.sh
 
+By default, brooklyn console will be available at localhost:8081. If you want to specify a different port, please use:
+
+    ./start -p <your-port>
+
 For more information, please look at the `README`, inside the `target` folder.
 
 For more information about the Cloudera Connect Partner Program, the Cloudera
