@@ -7,6 +7,7 @@ import io.cloudsoft.cloudera.SampleClouderaManagedClusterInterface;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -20,9 +21,11 @@ import brooklyn.entity.basic.Entities;
 import brooklyn.entity.proxying.EntitySpecs;
 import brooklyn.launcher.BrooklynLauncher;
 import brooklyn.location.cloud.CloudLocationConfig;
+import brooklyn.util.CommandLineUtil;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -31,7 +34,7 @@ import com.google.common.base.Strings;
 public class CertClusterBuilder {
     private static final Logger log = LoggerFactory.getLogger(CertClusterBuilder.class);
 
-    private static int port = 8081;
+    private static String port;
     private static ClusterBuilderFrame frame = null;
     private static final ExecutorService pool = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
@@ -47,7 +50,9 @@ public class CertClusterBuilder {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] argv) throws IOException {
+        List<String> args = Lists.newArrayList(argv);
+        port = CommandLineUtil.getCommandLineOption(args, "-p", "8081+");
         frame = new ClusterBuilderFrame();
         frame.pack();
         frame.setVisible(true);
@@ -71,7 +76,7 @@ public class CertClusterBuilder {
         System.setOut(out);
     }
     
-    public static int getPort() {
+    public static String getPort() {
         return port;
     }
     

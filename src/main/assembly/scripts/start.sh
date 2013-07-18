@@ -1,6 +1,24 @@
 #!/bin/bash
 
 JAVA=`which java`
+PORT=8081+
+
+usage() { 
+            echo "Start Cloudera Certification Cluster Builder";
+            echo "Accepted parameters:";
+            echo "-p port number. It should be greater than 1000 if you are not running as admin user";
+            echo "Usage: $0 [-p <string>]"  1>&2; exit 1; 
+        }
+
+while getopts p:h: option
+do
+        case "${option}"
+        in     
+            p) PORT=${OPTARG};;
+    		h) usage();;
+    		*) echo unknown option. It will be ignored;;
+        esac
+done
 
 if [ ! -z "$JAVA_HOME" ] ; then 
     JAVA=$JAVA_HOME/bin/java
@@ -18,4 +36,4 @@ if [ ! `ls cert-cluster-builder-*.jar 2> /dev/null` ] ; then
   exit 1
 fi
 
-$JAVA -Xms256m -Xmx1024m -XX:MaxPermSize=1024m -classpath "*:lib/*" com.cloudera.cert.CertClusterBuilder "$@"
+$JAVA -Xms256m -Xmx1024m -XX:MaxPermSize=1024m -classpath "*:lib/*" com.cloudera.cert.CertClusterBuilder "$@" $PORT
