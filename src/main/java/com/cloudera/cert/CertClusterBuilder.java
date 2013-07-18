@@ -53,6 +53,7 @@ public class CertClusterBuilder {
     public static void main(String[] argv) throws IOException {
         List<String> args = Lists.newArrayList(argv);
         port = CommandLineUtil.getCommandLineOption(args, "-p", "8081+");
+        log.info("Brooklyn will start on port({})", port);
         frame = new ClusterBuilderFrame();
         frame.pack();
         frame.setVisible(true);
