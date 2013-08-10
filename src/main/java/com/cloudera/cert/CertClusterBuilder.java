@@ -100,13 +100,16 @@ public class CertClusterBuilder {
     
     private static void deployCluster(String cloudCode, String cloudSpecifier, String identity, String credentials) throws IOException {
         BrooklynProperties brooklynProperties = BrooklynProperties.Factory.newDefault();
+        log.info("DeployCluster with cloudCode '" + cloudCode +"'");
+        log.info("DeployCluster with identity '" + identity +"'");
+        log.info("DeployCluster with credentials ''" + credentials +"'");
         String access_identity = checkNotNull(Strings.emptyToNull(identity), "identity must not be null");
         String access_credential = checkNotNull(Strings.emptyToNull(credentials), "credentials must not be null");
-
         String location = checkNotNull(Strings.emptyToNull(cloudCode), "cloudCode must not be null");
-        if(!Strings.isNullOrEmpty(cloudSpecifier)) { location += ":" + cloudSpecifier; }
         brooklynProperties.put("brooklyn.location.named." + location + ".identity", access_identity);
         brooklynProperties.put("brooklyn.location.named." + location + ".credential", access_credential);
+
+        //if(!Strings.isNullOrEmpty(cloudSpecifier)) { location += ":" + cloudSpecifier; }
         
         log.info("Start time for CDH deployment on '" + location +"'");
         Stopwatch stopwatch = new Stopwatch();
